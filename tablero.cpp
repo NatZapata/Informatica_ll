@@ -1,19 +1,19 @@
 #include "Tablero.h"
 
-unsigned char ** crear_tablero(unsigned short ancho, unsigned short altura){
+unsigned char ** crear_tablero(unsigned short &ancho, unsigned short &altura){
 
     // verificación de entrada de datos
-    while(ancho<8){
+    while((ancho)<8){
         cout<<"el ancho debe ser mayor o igual a 8 "<< endl;
         cout<<"Ingrese un nuevo valor: ";
         cin >> ancho;
     }
-    while(ancho%8 !=0){
+    while((ancho)%8 !=0){
         cout<<"El ancho debe ser un multiplo de 8"<<endl;
         cout<<"Ingrese un nuevo valor de ancho: ";
-        cin >> ancho;
+        cin >>ancho;
     }
-    while(altura<8){
+    while((altura)<8){
         cout<<"La altura debe ser mayor o igual a 8 "<< endl;
         cout<<"Ingrese un nuevo valor de altura: ";
         cin >> altura;
@@ -37,3 +37,16 @@ unsigned char ** crear_tablero(unsigned short ancho, unsigned short altura){
 
 
 }
+
+void dibujar_matriz(unsigned char** matriz,unsigned short &ancho, unsigned short &altura){
+
+    for(unsigned short i=0;i<altura;i++){
+        cout<<"             ";
+        for(int j=0;j<ancho;j++){
+            cout<<(short)(*(*(matriz+i)+j));
+        }
+        cout<<endl;
+    }
+}
+
+
