@@ -1,11 +1,11 @@
 #include "piezas.h"
 
-void crear_pieza_aleatoria(unsigned char **matriz,unsigned short &ancho_matriz,unsigned char *primera_mascara,
+void crear_pieza_aleatoria(unsigned short &ancho_matriz,unsigned char *primera_mascara,
                            unsigned char *segunda_mascara, unsigned char *tercera_mascara,
                            unsigned char *cuarta_mascara){
-    srand(time(0));
+
     unsigned char numero_pieza= (rand()%5)+1;
-    unsigned short mitad_fila=ancho_matriz/2;
+    unsigned short mitad_fila=(ancho_matriz)>>1;
 
     for(unsigned short i = 0; i < ancho_matriz; i++){
         primera_mascara[i] = 0;
@@ -96,4 +96,17 @@ void crear_pieza_aleatoria(unsigned char **matriz,unsigned short &ancho_matriz,u
 
 
     }
+
+
 }
+
+
+void poner_pieza(unsigned char **tablero,short posicion_pieza){
+    if(posicion_pieza==0){
+
+    }
+
+}
+
+
+
