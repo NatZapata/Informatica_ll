@@ -1,5 +1,7 @@
 #ifndef COMPORTAMIENTOSPIEZAS_H
 #define COMPORTAMIENTOSPIEZAS_H
+
+
 void mover_izquierda(unsigned char **tablero,
                      short &posicion_pieza,
                      unsigned short &ancho,

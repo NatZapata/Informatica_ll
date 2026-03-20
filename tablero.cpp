@@ -4,27 +4,9 @@
 unsigned char ** crear_tablero(unsigned short &ancho, unsigned short &altura){
 
     // verificación de entrada de datos
-    while((ancho)<8){
-        cout<<"El ancho debe ser mayor o igual a 8 "<< endl;
-        cout<<"Ingrese un nuevo valor: ";
-        cin >> ancho;
-    }
-    while((ancho)%8 !=0){
-        cout<<"El ancho debe ser un multiplo de 8"<<endl;
-        cout<<"Ingrese un nuevo valor de ancho: ";
-        cin >>ancho;
-    }
-    while((altura)<8){
-        cout<<"La altura debe ser mayor o igual a 8 "<< endl;
-        cout<<"Ingrese un nuevo valor de altura: ";
-        cin >> altura;
-    }
 
     //Cuerpo principal de la función
 
-    //Esta variable al ser pasada por referencia se modifica globalmente.
-    // Lo cual es importante para el resto del código.
-    ancho>>=3;
     //Uso de memoria dinámica, Esta será la base de los arreglos.
     unsigned char **tablero= new unsigned char *[altura];
 
@@ -62,14 +44,12 @@ void dibujar_matriz(unsigned char** matriz,
                     cout<<"  "<<".";
                 }
             }
-
-
-
         }
         cout<<endl;
     }
 }
-
+//Esta función no almacena nada, solo muestra por terminal una
+//superposición del tablero y la pieza.
 void dibujar_pieza_temporal(unsigned char **tablero,
                             short &posicion_pieza,
                             unsigned short &ancho,
@@ -117,7 +97,9 @@ void dibujar_pieza_temporal(unsigned char **tablero,
         cout<<endl;
     }
 }
-//Pone la pieza definitivamente en el tablero
+/*Pone la pieza definitivamente en el tablero
+ * solo se pone la pieza en el tablero si colisiona.
+ */
 void poner_pieza(unsigned char **tablero,
                  short &posicion_pieza,
                  unsigned short &ancho,
@@ -144,7 +126,11 @@ void poner_pieza(unsigned char **tablero,
     }
 }
 
+/*Función encargada de eliminar,
+ * detecta con una máscara si una linea esta llena.
+ * Luego, con la manipulación de los punteros se bajan las filas.
 
+*/
 void eliminar_fila(unsigned char **tablero,
                    unsigned short &ancho,
                    unsigned short &altura){
@@ -168,6 +154,7 @@ void eliminar_fila(unsigned char **tablero,
             for(short k=i;k>0;k--){
 
                 for(unsigned short m=0;m<ancho;m++){
+                    //*(*(tablero + k) + m) = *(*(tablero + (k - 1)) + m);
                     tablero[k][m]=tablero[k-1][m];
                 }
 

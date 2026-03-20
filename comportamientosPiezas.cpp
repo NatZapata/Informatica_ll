@@ -12,9 +12,11 @@ void mover_izquierda(unsigned char **tablero,
                      unsigned char *mascara4){
 
     unsigned char *mascaras[4] = {mascara1, mascara2, mascara3, mascara4};
+    short fila_tablero=0;
+    unsigned char futura;
 
     // verificar borde izquierdo
-    for(short f=0; f<4; f++){
+    for(unsigned short f=0; f<4; f++){
         if(mascaras[f][0] & 128)
             return;
     }
@@ -22,16 +24,17 @@ void mover_izquierda(unsigned char **tablero,
     // verificar colisión lateral
     for(short f=0; f<4; f++){
 
-        short fila_tablero = posicion_pieza - 3 + f;
+        fila_tablero = posicion_pieza - 3 + f;
 
         if(fila_tablero < 0)
             continue;
 
+        //Se recorren los bytes de la máscara.
         for(unsigned short i=0;i<ancho;i++){
 
-            unsigned char futura;
-
-            if(i < ancho-1 && (mascaras[f][i+1] & 128))
+            //unsigned char futura;
+// Solución del problema de un byte se pierde. Se traslada al sigueinte byte
+            if((i < ancho-1) && (mascaras[f][i+1] & 128))
                 futura = (mascaras[f][i] << 1) | 1;
             else
                 futura = mascaras[f][i] << 1;
@@ -120,7 +123,10 @@ bool bajar_pieza(unsigned char **tablero,
                  unsigned char *mascara3,
                  unsigned char *mascara4)
 {
-    const short FILAS = 4;
+    const unsigned short FILAS = 4;
+    bool colision = false;
+    unsigned char bloque;
+    short fila_tablero;
 
     unsigned char *mascaras[FILAS] =
         {
@@ -130,7 +136,7 @@ bool bajar_pieza(unsigned char **tablero,
             mascara4
         };
 
-    bool colision = false;
+
 
     // Revisar si la pieza puede bajar
     for(short f = FILAS-1; f >= 0 && !colision; f--)
@@ -140,9 +146,10 @@ bool bajar_pieza(unsigned char **tablero,
         if(fila_tablero < 0)
             continue;
 
-        for(unsigned short b = 0; b < ancho && !colision; b++)
+        for(unsigned short m = 0; m < ancho && !colision; m++)
         {
-            unsigned char bloque = mascaras[f][b];
+            bloque = mascaras[f][m];
+
 
             if(bloque == 0)
                 continue;
@@ -155,7 +162,7 @@ bool bajar_pieza(unsigned char **tablero,
             }
 
             // choque con otra pieza
-            if(tablero[fila_tablero + 1][b] & bloque)
+            if(tablero[fila_tablero + 1][m] & bloque)
             {
                 colision = true;
                 break;
@@ -171,10 +178,10 @@ bool bajar_pieza(unsigned char **tablero,
         return false;
     }
 
-    // Si hay colisión → fijar pieza
+    // Si hay colisión se procede a fijar la pieza
     for(short f = 0; f < FILAS; f++)
     {
-        short fila_tablero = posicion_pieza - (FILAS-1) + f;
+        fila_tablero = posicion_pieza - (FILAS-1) + f;
 
         if(fila_tablero < 0)
             continue;
@@ -205,6 +212,14 @@ void rotar_pieza(unsigned char **tablero,
 
     unsigned char *mascaras[4] = {mascara1, mascara2, mascara3, mascara4};
     unsigned char *nuevas[4]   = {nueva1, nueva2, nueva3, nueva4};
+    unsigned char pieza[4][4]={};
+    unsigned char rotada[4][4]={};
+    unsigned char *mascara;
+
+    short centro=0;
+    short ancho_pieza=0;
+    short byte=0;
+    short bit=0;
 
     for(short f=0; f<4; f++)
         for(unsigned short i=0;i<ancho;i++)
@@ -236,16 +251,18 @@ void rotar_pieza(unsigned char **tablero,
         }
     }
 
-    if(col_max==-1) return;
+    if(col_max==-1){
+        return;
+    }
 
-    short centro = (col_min + col_max) / 2;
-    short ancho_pieza = col_max-col_min+1;
+     centro = (col_min + col_max) / 2;
+     ancho_pieza = col_max-col_min+1;
 
-    unsigned char pieza[4][4]={};
 
-    for(short fila=0;fila<4;fila++){
 
-        unsigned char *mascara = mascaras[fila];
+    for(unsigned short fila=0;fila<4;fila++){
+
+         mascara = mascaras[fila];
 
         for(short col=0;col<ancho_pieza;col++){
 
@@ -258,24 +275,27 @@ void rotar_pieza(unsigned char **tablero,
         }
     }
 
-    unsigned char rotada[4][4]={};
 
-    for(short i=0;i<4;i++)
-        for(short j=0;j<4;j++)
+// Generación de la rotación de la matriz.
+    for(unsigned short i=0;i<4;i++)
+        for(unsigned short j=0;j<4;j++)
             rotada[j][3-i] = pieza[i][j];
+
+    //se pone cada bit, de la matriz 4*4 en su posición global en las máscaras.
 
     for(short fila=0;fila<4;fila++){
         for(short col=0;col<4;col++){
 
             if(rotada[fila][col]){
 
-                short bit_global = centro - 1 + col;
+                short bit_global = centro -1 + col;
 
-                if(bit_global < 0 || bit_global >= (ancho<<3))
+                if((bit_global < 0) || (bit_global) >= (ancho<<3)){
                     return;
+                }
 
-                short byte = bit_global>>3;
-                short bit = 7-(bit_global%8);
+                 byte = bit_global>>3;
+                 bit = 7-(bit_global%8);
 
                 nuevas[fila][byte] |= (1<<bit);
             }
@@ -300,6 +320,8 @@ void rotar_pieza(unsigned char **tablero,
         for(unsigned short i=0;i<ancho;i++)
             mascaras[f][i] = nuevas[f][i];
 }
+
+
 void movimientos(unsigned char **tablero,
                  short &posicion,
                  char &boton,
@@ -326,13 +348,13 @@ void movimientos(unsigned char **tablero,
     }
     case 's':{
         colision=bajar_pieza(tablero
-                               ,posicion,
-                               ancho,
-                               altura,
-                               mascara1,
-                               mascara2,mascara3,mascara4);
+                    ,posicion,
+                    ancho,
+                    altura,
+                    mascara1,
+                    mascara2,mascara3,mascara4);
     }
-    break;
+        break;
     case 'w':{
         rotar_pieza(tablero,
                     ancho,posicion,

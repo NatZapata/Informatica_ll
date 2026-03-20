@@ -31,5 +31,4 @@ void poner_pieza(unsigned char **tablero,
 void eliminar_fila(unsigned char **tablero,
                    unsigned short &ancho,
                    unsigned short &altura);
-
-#endif // TABLERO_H
+#endif
